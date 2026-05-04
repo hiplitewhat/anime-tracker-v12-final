@@ -11,8 +11,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Recommended for modern Capacitor
-          cache: 'npm'
+          node-version: '20'
+          # Remove the 'cache' line if you don't have a package-lock.json committed
+          # cache: 'npm' 
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -22,13 +23,13 @@ jobs:
           cache: 'gradle'
 
       - name: Install Dependencies
+        # Use 'npm install' if no lock file exists; it will create one
         run: npm install
 
       - name: Build Web Assets
-        run: npm run build # Ensure your package.json has a build script
+        run: npm run build
 
       - name: Capacitor Sync
-        # This creates/updates the android folder and copies web assets
         run: npx cap sync android
 
       - name: Build APK
@@ -41,6 +42,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk-${{ github.run_id }}
-          # Using a double wildcard (**) handles varying build flavors/folders
           path: android/app/build/outputs/apk/debug/**/*.apk
           if-no-files-found: error
+
